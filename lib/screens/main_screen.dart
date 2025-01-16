@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../class_templates/city.dart';
 import 'search_screen.dart';
 import 'forecast_screen.dart';
 import 'today_weather_screen.dart';
@@ -11,23 +12,50 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  static const List<Widget> _widgetOptions = <Widget>[
-    SearchScreen(),
-    TodayWeatherScreen(),
-    ForecastScreen(),
-  ];
-  int _currentIndex = 1;
+  int _selectedIndex = 1;
+  City? _selectedCity;
   void _onItemTapped(int index) {
     setState(() {
-      _currentIndex = index;
+      _selectedIndex = index;
+    });
+  }
+  void _onCitySelected(City city) {
+    setState(() {
+      _selectedCity = city;
+      _selectedIndex = 1; // Switch to TodayWeatherScreen
+    });
+  }
+
+  void _resetLocation() {
+    setState(() {
+      _selectedCity = null;
+      _selectedIndex = 1;
     });
   }
   @override
   Widget build(BuildContext context) {
+    List<Widget> screens = [
+      SearchScreen(onCitySelected: _onCitySelected),
+      TodayWeatherScreen(
+        cityName: _selectedCity?.localNames?['ru'] ?? _selectedCity?.name ?? '',
+        latitude: _selectedCity?.lat ?? 0.0,
+        longitude: _selectedCity?.lon ?? 0.0,
+      ),
+      // Add ForecastScreen here if needed
+    ];
     return Scaffold(
-      body: _widgetOptions.elementAt(_currentIndex),
+      appBar: AppBar(
+        title: const Text('Погода'),
+        actions: [
+          IconButton(
+              onPressed: _resetLocation,
+              icon: Icon(Icons.my_location)
+          )
+        ],
+      ),
+      body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
+          currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           items: [
             BottomNavigationBarItem(

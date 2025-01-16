@@ -4,8 +4,9 @@ import 'package:weather_app/request_handler/city_request_handler.dart';
 
 class CityListWidget extends StatelessWidget {
   final List<City> cities;
+  final Function(City) onCitySelected;
 
-  const CityListWidget({super.key, required this.cities});
+  const CityListWidget({super.key, required this.cities, required this.onCitySelected});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +27,7 @@ class CityListWidget extends StatelessWidget {
           ),
           subtitle: Text(city.country),
           onTap: () {
-            // Define what happens when a city is tapped
-            print('Tapped on $cityName');
+            onCitySelected(city); // Trigger the callback with the selected city
           },
         );
       },
@@ -36,7 +36,8 @@ class CityListWidget extends StatelessWidget {
 }
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final Function(City) onCitySelected;
+  const SearchScreen({super.key, required this.onCitySelected});
   @override
   State<StatefulWidget> createState() => _SearchScreenState();
 }
@@ -86,7 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
             _isLoading
                 ? CircularProgressIndicator()
                 : Expanded(
-              child: CityListWidget(cities: _foundCities),
+              child: CityListWidget(cities: _foundCities, onCitySelected: widget.onCitySelected,),
             ),
           ],
         ),

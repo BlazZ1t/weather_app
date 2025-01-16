@@ -93,7 +93,7 @@ class Main {
       temp: (json['temp'] as num).round(),
       feelsLike: (json['feels_like'] as num).round(),
       tempMin: json['temp_min'],
-      tempMax: json['temp_max'],
+      tempMax: (json['temp_max'] as num).toDouble(),
       pressure: json['pressure'],
       humidity: json['humidity'],
       seaLevel: json['sea_level'],
@@ -125,7 +125,7 @@ class Rain {
 
   factory Rain.fromJson(Map<String, dynamic> json) {
     return Rain(
-      oneHour: json['1h'],
+      oneHour: (json['1h'] as num).toDouble(),
     );
   }
 }

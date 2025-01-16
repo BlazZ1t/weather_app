@@ -43,7 +43,7 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
       lon = position.longitude;
     }
 
-    if (widget.cityName == null) {
+    if (widget.cityName == '' || widget.cityName == null) {
       ReverseCityFinderHandler cityFinder = ReverseCityFinderHandler();
       City city = await cityFinder.getCityByCoordinates(lat, lon);
       cityName = city.localNames?['ru'] ?? city.name;
