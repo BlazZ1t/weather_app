@@ -10,96 +10,72 @@ import 'package:weather_app/request_handler/reverse_city_finder_handler.dart';
 
 import 'package:weather_app/request_handler/weather_request_handler.dart';
 
-class WeatherWidget extends StatefulWidget {
-  final double? lat;
-  final double? lon;
+class TodayWeatherScreen extends StatefulWidget {
+  final double? latitude;
+  final double? longitude;
   final String? cityName;
 
-  WeatherWidget({super.key, this.lat, this.lon, this.cityName});
+  const TodayWeatherScreen({Key? key, this.latitude, this.longitude, this.cityName}) : super(key: key);
 
   @override
-  _WeatherWidgetState createState() => _WeatherWidgetState();
+  _TodayWeatherScreenState createState() => _TodayWeatherScreenState();
 }
 
-class _WeatherWidgetState extends State<WeatherWidget> {
-  late Future<WeatherTimestamp> weatherTimestamp;
-  late Future<String> cityName;
+class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
+  String? cityName;
+  int? temperature;
+  int? feelsLike;
+  bool isLoading = true;
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    if (widget.lat != null && widget.lon != null && widget.cityName != null) {
-      weatherTimestamp = WeatherTimestamp.fromJson(jsonDecode(WeatherRequest().getWeatherTimestamp(widget.lat!, widget.lon!) as String)) as Future<WeatherTimestamp> ;
-      cityName = Future.value(widget.cityName);
-    } else {
-      List<double> coordinates = await getCurrentLocation();
-      weatherTimestamp = getWeatherOnLocation(coordinates[0], coordinates[1]);
-      cityName = getCurrentCityName();
+    _fetchWeatherData();
+  }
+
+  Future<void> _fetchWeatherData() async {
+    double lat = widget.latitude ?? 0.0;
+    double lon = widget.longitude ?? 0.0;
+
+    if (lat == 0.0 && lon == 0.0) {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      lat = position.latitude;
+      lon = position.longitude;
     }
+
+    if (widget.cityName == null) {
+      ReverseCityFinderHandler cityFinder = ReverseCityFinderHandler();
+      City city = await cityFinder.getCityByCoordinates(lat, lon);
+      cityName = city.localNames?['ru'] ?? city.name;
+    } else {
+      cityName = widget.cityName;
+    }
+
+    WeatherRequest weatherRequest = WeatherRequest();
+    String weatherData = await weatherRequest.getWeatherTimestamp(lat, lon);
+    CurrentWeather currentWeather = CurrentWeather.fromJson(jsonDecode(weatherData));
+    temperature = currentWeather.main.temp;
+    feelsLike = currentWeather.main.feelsLike;
+
+    setState(() {
+      isLoading = false;
+    });
   }
-
-  Future<List<double>> getCurrentLocation() async {
-    final LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.medium,
-      timeLimit: Duration(seconds: 2),
-      distanceFilter: 1000,
-    );
-    Position position = await Geolocator.getCurrentPosition(locationSettings: locationSettings);
-    return [position.latitude, position.longitude];
-  }
-
-  Future<WeatherTimestamp> getWeatherOnLocation(double lat, double lon) async {
-    return WeatherTimestamp.fromJson(jsonDecode(await WeatherRequest().getWeatherTimestamp(lat, lon)));
-  }
-
-  Future<String> getCurrentCityName() async {
-    List<double> coordinates = await getCurrentLocation();
-    City city = await ReverseCityFinderHandler().getCityByCoordinates(coordinates[0], coordinates[1]);
-    return city.name;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Future.wait([weatherTimestamp, cityName]),
-      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          WeatherTimestamp weather = snapshot.data![0];
-          String city = snapshot.data![1];
-          return Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Text(
-                  city,
-                  style: TextStyle(fontSize: 32.0),
-                ),
-                SizedBox(height: 16.0),
-                Text(
-                  weather.data.temp.toString(),
-                  style: TextStyle(fontSize: 34.0),
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
-  }
-}
-
-
-class TodayWeatherScreen extends StatelessWidget {
-  const TodayWeatherScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: WeatherWidget(),
+      child: isLoading
+          ? CircularProgressIndicator()
+          : Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(cityName ?? 'Unknown City', style: TextStyle(fontSize: 24)),
+          Text('${temperature?.toString() ?? '--'} °C', style: TextStyle(fontSize: 48)),
+          Text('Ощущается как: ${feelsLike?.toString() ?? '--'} °C', style: TextStyle(fontSize: 16)),
+        ],
+      ),
     );
   }
 }
+

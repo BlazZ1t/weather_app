@@ -13,8 +13,9 @@ class ReverseCityFinderHandler {
 
     String responseStr = utf8.decode(response.bodyBytes);
 
-    City city = City.fromJson(jsonDecode(responseStr));
+    List<dynamic> jsonArray = json.decode(responseStr);
+    List<City> cityList = jsonArray.map((json) => City.fromJson(json)).toList();
 
-    return city;
+    return cityList[0];
   }
 }
