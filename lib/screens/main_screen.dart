@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 
 import '../class_templates/city.dart';
 import 'search_screen.dart';
@@ -21,37 +23,21 @@ class _MainScreenState extends State<MainScreen> {
   }
   void _onCitySelected(City city) {
     setState(() {
-      _selectedCity = city;
+      Provider.of<CityNotifier>(context, listen: false).updateCity(city);
       _selectedIndex = 1; // Switch to TodayWeatherScreen
     });
   }
 
-  void _resetLocation() {
-    setState(() {
-      _selectedCity = null;
-      _selectedIndex = 1;
-    });
-  }
   @override
   Widget build(BuildContext context) {
     List<Widget> screens = [
       SearchScreen(onCitySelected: _onCitySelected),
-      TodayWeatherScreen(
-        cityName: _selectedCity?.localNames?['ru'] ?? _selectedCity?.name ?? '',
-        latitude: _selectedCity?.lat ?? 0.0,
-        longitude: _selectedCity?.lon ?? 0.0,
-      ),
+      TodayWeatherScreen(),
       // Add ForecastScreen here if needed
     ];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Погода'),
-        actions: [
-          IconButton(
-              onPressed: _resetLocation,
-              icon: Icon(Icons.my_location)
-          )
-        ],
       ),
       body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(

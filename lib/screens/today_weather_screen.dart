@@ -3,19 +3,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import 'package:weather_app/class_templates/city.dart';
 import 'package:weather_app/class_templates/weather.dart';
 import 'package:weather_app/request_handler/reverse_city_finder_handler.dart';
 
 import 'package:weather_app/request_handler/weather_request_handler.dart';
+import 'package:weather_app/screens/search_screen.dart';
 
 class TodayWeatherScreen extends StatefulWidget {
-  final double? latitude;
-  final double? longitude;
-  final String? cityName;
 
-  const TodayWeatherScreen({Key? key, this.latitude, this.longitude, this.cityName}) : super(key: key);
+  const TodayWeatherScreen({super.key});
 
   @override
   _TodayWeatherScreenState createState() => _TodayWeatherScreenState();
@@ -26,6 +25,8 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
   int? temperature;
   int? feelsLike;
   bool isLoading = true;
+  late City? city;
+  CityNotifier? cityNotifier;
 
   @override
   void initState() {
@@ -33,9 +34,24 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
     _fetchWeatherData();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    cityNotifier = Provider.of<CityNotifier>(context);
+    cityNotifier?.addListener(_fetchWeatherData);
+  }
+
+  @override
+  void dispose() {
+    cityNotifier?.removeListener(_fetchWeatherData);
+    super.dispose();
+  }
+
+
   Future<void> _fetchWeatherData() async {
-    double lat = widget.latitude ?? 0.0;
-    double lon = widget.longitude ?? 0.0;
+    final cityNotifier = Provider.of<CityNotifier>(context, listen: false);
+    double lat = cityNotifier.city?.lat ?? 0.0;
+    double lon = cityNotifier.city?.lon ?? 0.0;
 
     if (lat == 0.0 && lon == 0.0) {
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -43,13 +59,12 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
       lon = position.longitude;
     }
 
-    if (widget.cityName == '' || widget.cityName == null) {
+    if (cityNotifier.city == null) {
       ReverseCityFinderHandler cityFinder = ReverseCityFinderHandler();
-      City city = await cityFinder.getCityByCoordinates(lat, lon);
-      cityName = city.localNames?['ru'] ?? city.name;
-    } else {
-      cityName = widget.cityName;
+      cityNotifier.updateCity(await cityFinder.getCityByCoordinates(lat, lon));
     }
+
+    cityName = cityNotifier.city?.localNames?['ru'] ?? cityNotifier.city?.name;
 
     WeatherRequest weatherRequest = WeatherRequest();
     String weatherData = await weatherRequest.getWeatherTimestamp(lat, lon);
@@ -57,13 +72,16 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
     temperature = currentWeather.main.temp;
     feelsLike = currentWeather.main.feelsLike;
 
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final cityNotifier = Provider.of<CityNotifier>(context);
     return Center(
       child: isLoading
           ? CircularProgressIndicator()
@@ -73,6 +91,13 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
           Text(cityName ?? 'Unknown City', style: TextStyle(fontSize: 24)),
           Text('${temperature?.toString() ?? '--'} °C', style: TextStyle(fontSize: 48)),
           Text('Ощущается как: ${feelsLike?.toString() ?? '--'} °C', style: TextStyle(fontSize: 16)),
+          SizedBox(height: 20),
+          IconButton(
+            onPressed: () {
+              cityNotifier.resetCity();
+            },
+            icon: Icon(Icons.location_on),
+          ),
         ],
       ),
     );
