@@ -13,5 +13,14 @@ class WeatherRequest {
 
     return responseStr;
   }
+  
+  Future<String> getForecast(double lat, double lon) async {
+    final response = await http.get(Uri.parse(
+        'https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=$lat&lon=$lon&units=metric&lang=ru&appid=$key'));
+
+    String responseStr = utf8.decode(response.bodyBytes);
+
+    return responseStr;
+  }
 
 }

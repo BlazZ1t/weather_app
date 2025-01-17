@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import 'package:weather_app/class_templates/city.dart';
-import 'package:weather_app/class_templates/weather.dart';
+import 'package:weather_app/class_templates/current_weather.dart';
 import 'package:weather_app/request_handler/reverse_city_finder_handler.dart';
 
 import 'package:weather_app/request_handler/weather_request_handler.dart';

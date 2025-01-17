@@ -15,7 +15,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 1;
-  City? _selectedCity;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -24,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   void _onCitySelected(City city) {
     setState(() {
       Provider.of<CityNotifier>(context, listen: false).updateCity(city);
-      _selectedIndex = 1; // Switch to TodayWeatherScreen
+      _selectedIndex = 1;
     });
   }
 
@@ -33,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
     List<Widget> screens = [
       SearchScreen(onCitySelected: _onCitySelected),
       TodayWeatherScreen(),
-      // Add ForecastScreen here if needed
+      ForecastScreen()
     ];
     return Scaffold(
       appBar: AppBar(
