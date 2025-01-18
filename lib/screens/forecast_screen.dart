@@ -18,29 +18,31 @@ class ForecastScreen extends StatefulWidget {
 
 class _ForecastScreenState extends State<ForecastScreen> {
   bool _isLoading = true;
-  late List<ForecastDay> _forecast;
+  late List<WeatherData> _forecast;
+  late int _timezoneShift;
+  CityNotifier? cityNotifier;
 
-  List<ForecastDay> sortForecastStamps(List<Forecast> forecasts, int timeShift) {
-    Map<String, List<Forecast>> groupedForecasts = {};
-
-    for (var forecast in forecasts) {
-      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch((forecast.dt + timeShift) * 1000, isUtc: true);
-      String dayKey = DateFormat('yyyy-MM-dd').format(dateTime);
-
-      if (!groupedForecasts.containsKey(dayKey)) {
-        groupedForecasts[dayKey] = [];
-      }
-      groupedForecasts[dayKey]!.add(forecast);
-    }
-
-    List<ForecastDay> forecastDays = groupedForecasts.entries.map((entry) {
-      return ForecastDay(hours: entry.value);
-    }).toList();
-
-    return forecastDays;
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeatherData();
   }
 
-  Future<void> _fetchWeather() async {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    cityNotifier = Provider.of<CityNotifier>(context);
+    cityNotifier?.addListener(_fetchWeatherData);
+  }
+
+  @override
+  void dispose() {
+    cityNotifier?.removeListener(_fetchWeatherData);
+    super.dispose();
+  }
+
+
+  Future<void> _fetchWeatherData() async {
     final notifier = Provider.of<CityNotifier>(context, listen: false);
     double lat = notifier.city?.lat ?? 0.0;
     double lon = notifier.city?.lon ?? 0.0;
@@ -53,7 +55,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
     WeatherForecast weatherForecast = WeatherForecast.fromJson(
         jsonDecode(await WeatherRequest().getForecast(lat, lon)));
 
-    _forecast = sortForecastStamps(weatherForecast.list, weatherForecast.city.timezone);
+    _forecast = weatherForecast.list;
+    _timezoneShift = weatherForecast.city.timezone;
+
+    setState(() {
+      _isLoading = false;
+    });
 
   }
 
@@ -66,7 +73,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
          ? CircularProgressIndicator()
          : Column(
        mainAxisAlignment: MainAxisAlignment.center,
-
+       children: [
+         Text("Fetched ${_forecast.length} days")
+       ],
      ) ,
    );
   }

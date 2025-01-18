@@ -92,7 +92,7 @@ class Main {
     return Main(
       temp: (json['temp'] as num).round(),
       feelsLike: (json['feels_like'] as num).round(),
-      tempMin: json['temp_min'],
+      tempMin: (json['temp_min'] as num).toDouble(),
       tempMax: (json['temp_max'] as num).toDouble(),
       pressure: json['pressure'],
       humidity: json['humidity'],

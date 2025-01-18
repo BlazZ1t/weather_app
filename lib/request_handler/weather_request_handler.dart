@@ -16,7 +16,7 @@ class WeatherRequest {
   
   Future<String> getForecast(double lat, double lon) async {
     final response = await http.get(Uri.parse(
-        'https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=$lat&lon=$lon&units=metric&lang=ru&appid=$key'));
+        'https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&units=metric&lang=ru&cnt=5&appid=$key'));
 
     String responseStr = utf8.decode(response.bodyBytes);
 

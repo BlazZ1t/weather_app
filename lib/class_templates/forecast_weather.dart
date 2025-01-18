@@ -2,7 +2,7 @@ class WeatherForecast {
   final String cod;
   final int message;
   final int cnt;
-  final List<Forecast> list;
+  final List<WeatherData> list;
   final City city;
 
   WeatherForecast({
@@ -18,48 +18,46 @@ class WeatherForecast {
       cod: json['cod'],
       message: json['message'],
       cnt: json['cnt'],
-      list: (json['list'] as List).map((i) => Forecast.fromJson(i)).toList(),
+      list: (json['list'] as List)
+          .map((item) => WeatherData.fromJson(item))
+          .toList(),
       city: City.fromJson(json['city']),
     );
   }
 }
 
-class ForecastDay {
-  final List<Forecast> hours;
-
-  ForecastDay({required this.hours});
-}
-
-class Forecast {
+class WeatherData {
   final int dt;
   final Main main;
   final List<Weather> weather;
   final Clouds clouds;
   final Wind wind;
-  final int visibility;
+  final int? visibility;
   final double pop;
   final Rain? rain;
   final Sys sys;
   final String dtTxt;
 
-  Forecast({
+  WeatherData({
     required this.dt,
     required this.main,
     required this.weather,
     required this.clouds,
     required this.wind,
-    required this.visibility,
+    this.visibility,
     required this.pop,
     this.rain,
     required this.sys,
     required this.dtTxt,
   });
 
-  factory Forecast.fromJson(Map<String, dynamic> json) {
-    return Forecast(
+  factory WeatherData.fromJson(Map<String, dynamic> json) {
+    return WeatherData(
       dt: json['dt'],
       main: Main.fromJson(json['main']),
-      weather: (json['weather'] as List).map((i) => Weather.fromJson(i)).toList(),
+      weather: (json['weather'] as List)
+          .map((item) => Weather.fromJson(item))
+          .toList(),
       clouds: Clouds.fromJson(json['clouds']),
       wind: Wind.fromJson(json['wind']),
       visibility: json['visibility'],
@@ -163,12 +161,12 @@ class Wind {
 }
 
 class Rain {
-  final double oneHour;
+  final double threeH;
 
-  Rain({required this.oneHour});
+  Rain({required this.threeH});
 
   factory Rain.fromJson(Map<String, dynamic> json) {
-    return Rain(oneHour: json['1h'].toDouble());
+    return Rain(threeH: json['3h'].toDouble());
   }
 }
 
@@ -221,10 +219,7 @@ class Coord {
   final double lat;
   final double lon;
 
-  Coord({
-    required this.lat,
-    required this.lon,
-  });
+  Coord({required this.lat, required this.lon});
 
   factory Coord.fromJson(Map<String, dynamic> json) {
     return Coord(
