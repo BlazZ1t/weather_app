@@ -1,16 +1,16 @@
-# weather_app
+# Приложение для погоды
 
-A new Flutter project.
+Найти погоду в любом городе мира
 
-## Getting Started
+## Пользование
 
-This project is a starting point for a Flutter application.
+Распакуйте архив Weather.rar
 
-A few resources to get you started if this is your first Flutter project:
+Запустите файл weather_app.exe
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Чтобы найти погоду по городу, зайдите во вкладку поиск, и найдите нужный город
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Чтобы вернуть текущую геолокацию, нажмите иконку под основной погодой
+
+Чтобы посмотреть прогноз на ближайшие несколько дней, перейдите во вкладку геолокации
+
