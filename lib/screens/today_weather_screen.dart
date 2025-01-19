@@ -90,7 +90,7 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
           : Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(cityName ?? 'Unknown City', style: TextStyle(fontSize: 24)),
+          Text(cityName ?? 'Разрешите геопозицию чтобы увидеть погоду на вашей локации', style: TextStyle(fontSize: 24)),
           Text(weatherDescription, style: TextStyle(fontSize: 20)),
           Text('${temperature?.toString() ?? '--'} °C', style: TextStyle(fontSize: 48)),
           Text('Ощущается как: ${feelsLike?.toString() ?? '--'} °C', style: TextStyle(fontSize: 16)),
