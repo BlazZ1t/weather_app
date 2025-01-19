@@ -143,15 +143,15 @@ class Clouds {
 }
 
 class Sys {
-  int type;
-  int id;
+  int? type;
+  int? id;
   String country;
   int sunrise;
   int sunset;
 
   Sys({
-    required this.type,
-    required this.id,
+    this.type,
+    this.id,
     required this.country,
     required this.sunrise,
     required this.sunset,

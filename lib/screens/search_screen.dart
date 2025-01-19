@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/class_templates/city.dart';
 import 'package:weather_app/request_handler/city_request_handler.dart';
-import 'package:flutter/foundation.dart';
 
 class CityListWidget extends StatelessWidget {
   final List<City> cities;

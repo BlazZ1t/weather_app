@@ -26,6 +26,22 @@ class WeatherForecast {
   }
 }
 
+class WeatherDay {
+  final int day;
+  final int month;
+  final int year;
+  final List<WeatherData> hours;
+  late int averageTemperature;
+
+  WeatherDay({required this.day, required this.month, required this.year, required this.hours}) {
+    averageTemperature = 0;
+    for (WeatherData weatherData in hours) {
+      averageTemperature += weatherData.main.temp.round();
+    }
+    averageTemperature = (averageTemperature / hours.length).round();
+  }
+}
+
 class WeatherData {
   final int dt;
   final Main main;
