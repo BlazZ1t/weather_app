@@ -32,6 +32,7 @@ class WeatherDay {
   final int year;
   final List<WeatherData> hours;
   late int averageTemperature;
+  late String averageWeatherType;
 
   WeatherDay({required this.day, required this.month, required this.year, required this.hours}) {
     averageTemperature = 0;
@@ -39,6 +40,16 @@ class WeatherDay {
       averageTemperature += weatherData.main.temp.round();
     }
     averageTemperature = (averageTemperature / hours.length).round();
+
+    Map<String, int> descriptionCount = {};
+
+    for (WeatherData weatherData in hours) {
+      for (Weather weather in weatherData.weather) {
+        descriptionCount[weather.description] = (descriptionCount[weather.description] ?? 0) + 1;
+      }
+    }
+
+    averageWeatherType = descriptionCount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
   }
 }
 

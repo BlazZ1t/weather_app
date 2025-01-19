@@ -22,6 +22,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MainScreen(),
+      theme: ThemeData(
+          colorSchemeSeed: Color.fromRGBO(135, 206, 235, 0),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xdd68e0fe)
+        ),
+        scaffoldBackgroundColor: Color(0xffc2f2fe)
+      ),
     );
   }
 }

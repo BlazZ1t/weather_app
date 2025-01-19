@@ -24,6 +24,7 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
   String? cityName;
   int? temperature;
   int? feelsLike;
+  late String weatherDescription;
   bool isLoading = true;
   late City? city;
   CityNotifier? cityNotifier;
@@ -71,6 +72,7 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
     CurrentWeather currentWeather = CurrentWeather.fromJson(jsonDecode(weatherData));
     temperature = currentWeather.main.temp;
     feelsLike = currentWeather.main.feelsLike;
+    weatherDescription = currentWeather.weather[0].description[0].toUpperCase() + currentWeather.weather[0].description.substring(1);
 
     if (mounted) {
       setState(() {
@@ -89,6 +91,7 @@ class _TodayWeatherScreenState extends State<TodayWeatherScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(cityName ?? 'Unknown City', style: TextStyle(fontSize: 24)),
+          Text(weatherDescription, style: TextStyle(fontSize: 20)),
           Text('${temperature?.toString() ?? '--'} °C', style: TextStyle(fontSize: 48)),
           Text('Ощущается как: ${feelsLike?.toString() ?? '--'} °C', style: TextStyle(fontSize: 16)),
           SizedBox(height: 20),

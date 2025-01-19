@@ -67,11 +67,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
     Map<String, List<WeatherData>> daysMap = {};
 
     for (var weatherData in weatherDataList) {
-      // Adjust the timestamp with the timezone shift
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(weatherData.dt * 1000, isUtc: true)
           .add(Duration(seconds: timezoneShift));
 
-      // Format the date to extract day, month, and year
       String dayKey = DateFormat('yyyyMMdd').format(dateTime);
 
       if (!daysMap.containsKey(dayKey)) {
@@ -99,30 +97,34 @@ class _ForecastScreenState extends State<ForecastScreen> {
    final notifier = Provider.of<CityNotifier>(context);
 
    return Center(
-     child: _isLoading
-         ? CircularProgressIndicator()
-         : Column(
-       mainAxisAlignment: MainAxisAlignment.center,
-           children: [
-             Expanded(
-               child: ListView.builder(
-                      itemCount: _forecast.length,
-               itemBuilder: (context, index) {
-                 final day = _forecast[index];
-                 DateTime dateTime = DateTime(day.year, day.month, day.day);
-                 final dateTimeString = DateFormat('dd.MM.yyyy').format(dateTime);
-                 final temperature = day.averageTemperature;
-                 return ListTile(
-                   title: Text(dateTimeString,
-                   style: TextStyle(fontSize: 16)
-                   ),
-                   subtitle: Text('Средняя температура: $temperature'),
-                 );
-               }
-                    ),
-             ),
-           ],
-         )
+     child: Padding(
+       padding: const EdgeInsets.all(16.0),
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+           _isLoading
+               ? CircularProgressIndicator()
+               : Expanded(
+                 child: ListView.builder(
+                        itemCount: _forecast.length,
+                 itemBuilder: (context, index) {
+                   final day = _forecast[index];
+                   DateTime dateTime = DateTime(day.year, day.month, day.day);
+                   final dateTimeString = DateFormat('dd.MM').format(dateTime);
+                   final temperature = day.averageTemperature;
+                   final weatherDescription = day.averageWeatherType[0].toUpperCase() + day.averageWeatherType.substring(1);
+                   return ListTile(
+                     title: Text(dateTimeString,
+                     style: TextStyle(fontSize: 16)
+                     ),
+                     subtitle: Text('$temperature °C \n$weatherDescription'),
+                   );
+                 }
+                      ),
+               ),
+         ],
+       ),
+     ),
    );
   }
 }

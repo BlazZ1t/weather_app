@@ -89,14 +89,14 @@ class _SearchScreenState extends State<SearchScreen> {
             TextField(
               controller: _controller,
               decoration: const InputDecoration(
-                labelText: 'Enter a city to search for',
+                labelText: 'Введите город, погоду которого хотите узнать',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: _performSearch,
-              child: const Text("Search"),
+              child: const Text("Искать"),
             ),
             const SizedBox(height: 16),
             _isLoading

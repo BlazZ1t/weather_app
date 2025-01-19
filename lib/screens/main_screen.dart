@@ -37,23 +37,26 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Погода'),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       ),
       body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Color(0xdd48dafe),
+          unselectedItemColor: Color(0xffc2f2fe),
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           items: [
             BottomNavigationBarItem(
                 icon: Icon(Icons.search),
-                label: "Search"
+                label: "Поиск"
             ),
             BottomNavigationBarItem(
                 icon: Icon(Icons.wb_cloudy),
-                label: "Weather"
+                label: "Погода"
             ),
             BottomNavigationBarItem(
                 icon: Icon(Icons.calendar_month),
-                label: "Forecast")
+                label: "Прогноз")
           ]
       ),
     );
